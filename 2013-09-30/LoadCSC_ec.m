@@ -15,6 +15,13 @@ function csc = LoadCSC_ec(fname,varargin)
 % OUTPUTS:
 %
 % csc: [1 x 1] mytsd
+%% Remind the user that the file needs to be in the path.
+c_dir = cd;
+
+if strcmp(c_dir((length(c_dir)-14):end),fname(1:15))==0
+    error('You are not in the right dirctory.  Please add the data folder to the path or cd to the data folder')
+end
+
 %% Define some variables.
 run(FindFile('*keys.m'))
 % type = 'all';  % this is the type of data you wish to display.
@@ -32,14 +39,6 @@ elseif time_units == 1000
 else
     tUnits = 'unspecified';  % This should actually cover more units but that would take more time and space, but I am sure that you get the idea.
 end
-%% Remind the user that the file needs to be in the path.
-c_dir = cd;
-
-if strcmp(c_dir((length(c_dir)-14):end),fname(1:15))==0
-    error('You are not in the right dirctory.  Please add the data folder to the path or cd to the data folder')
-end
-
-
 
 %%  Load the data using the old function, and convert the sample voltages and time units.
 [Timestamps, ~, SampleFrequencies, NumberOfValidSamples, Samples, Header] = Nlx2MatCSC(fname, [1 1 1 1 1], 1, 1, []);
@@ -79,8 +78,11 @@ if length(Timestamps_s_1D) ~= length(Samples_in_mV_1D)
     error('The Timestamps vector and the Samples vector are not the same length')
 end
 
-%% Index, remove and verify the seconds with invalid data points
-    index_invalid = (Samples_in_mV_1D == 0);
+%% Index, remove and verify the seconds with invalid data points.  The invalid points are cross referenced with the samples to ensure that only the invalid samples that correspond with an invalid marker are removed and not samples that are =0
+    num_invalid_ind = (NumberOfValidSamples==512);
+    num_invalid_ind = repmat(num_invalid_ind,size(Samples,1),1);
+    num_invalid_ind = reshape(num_invalid_ind,[size(num_invalid_ind ,1)*size(num_invalid_ind,2) 1])'; 
+    index_invalid = (Samples_in_mV_1D == 0 & num_invalid_ind==0);
     Samples_in_mV_1D(index_invalid) = [];
     Timestamps_s_1D(index_invalid) = [];
     
@@ -103,24 +105,5 @@ subplot(212)
 plot(diff(Range(csc)),'r')
 xlabel(['Invalid points:  ' num2str(percentage) '%'])
 text(length(Range(csc))-length(Range(csc))/4, 0.5*(max(Range(csc))), ['Total Invalid Points:' total_invalid])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 end
