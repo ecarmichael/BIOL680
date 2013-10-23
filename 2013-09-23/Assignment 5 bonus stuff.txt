@@ -1,0 +1,3 @@
+Assignment 5 extra stuff
+
+An ideal way to enhance this function would be to add a noise detection component.  This could be accomplished by adding additional filters above and below the desired SWR band and then lookling for the degree of overlap between the two power envelopes.  This would let you remove the artifacts from the actual SWRs.
