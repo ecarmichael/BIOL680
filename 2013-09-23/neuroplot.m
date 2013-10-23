@@ -22,10 +22,10 @@ function neuroplot(spikes,csc,varargin)
 %% Initilize default values
 cscColor = [.7 .7 .7];
 spikeColor = [1 0 0];
-evtColor = [0 0 0];
+evtColor = [0 1 1];
 evt = 0:10:max(Data(spikes{1}));
 interactiveMode = 1; % for the interactive figure navigator 1 is on and 0 is off.  
-default_zoom = [4000 4002];
+default_zoom = [6000 6028];
 extract_varargin;  % this will allow for modifications to the default values
 
 %% extract the spike times from the S cell of ts values
@@ -63,8 +63,12 @@ csc_plot = plot(time,data_mod);
 set(csc_plot,'Color', cscColor)
 
 %% Add the event lines
+for ii = 1:length(evt)
+    event_lines(ii) = find(time == evt(ii));
+end
+% event_times = time(evt.t);
 for ev = 1:length(evt)
-    line(evt(ev),0:0.1:80,'Color',evtColor)
+    line([time(event_lines(ev)) time(event_lines(ev))], [(-5.5+ss) (5.5+ss)],'Color',evtColor)
 end
 
 %% Make some restrictions and alter the figure.
