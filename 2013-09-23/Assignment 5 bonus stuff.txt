@@ -1,3 +1,5 @@
 Assignment 5 extra stuff
 
-An ideal way to enhance this function would be to add a noise detection component.  This could be accomplished by adding additional filters above and below the desired SWR band and then lookling for the degree of overlap between the two power envelopes.  This would let you remove the artifacts from the actual SWRs.
+- An ideal way to enhance this function would be to add a noise detection component.  This could be accomplished by adding additional filters above and below the desired SWR band and then lookling for the degree of overlap between the two power envelopes.  This would let you remove the artifacts from the actual SWRs.
+
+- Normalizing the data through z-scoring ensures that the points of interest stand out from the rest of the baseline data.  If say the power envelope is not normalized then values with a particularly high power at a given time (say if the signal was paricularly noisy) would be included leading to false positives.  Normalization offers the ability to determine the degree of diviation from the baseline level.
