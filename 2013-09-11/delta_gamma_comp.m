@@ -51,9 +51,11 @@ for ii  = 1:length(delta_power_filtered )
    delta_z(ii,1) = (delta_power_filtered (ii)-delta_mean)/delta_sd;
 end
 
-good_delta = delta_filt(delta_z>delta_threshold);
-good_gamma = gamma_filt(delta_z>delta_threshold);
-good_tvec = tvec(delta_z>delta_threshold);
+% Replace values below the thrshold z-score with zeros. 
+subthreshold_delta = delta_z<delta_threshold;
+good_delta = delta_filt; good_gamma = gamma_filt;
+good_delta(subthreshold_delta==1)=0;
+good_gamma(subthreshold_delta==1)=0;
 %% extract delta phase and low gamma power
 % delta
 delta_phase = angle(hilbert(good_delta));
@@ -64,13 +66,6 @@ gamma_pwr = abs(hilbert(good_gamma));
 %plot to maintain sanity
 [ax_h,h1,h2] = plotyy(good_tvec,gamma_pwr,good_tvec,delta_phase);
 
-% extract the events of interest (those with high delta power) using the
-% detect_delta function
-
-
-
-
-%% identify the 
 %% use averageXbyYbin to plot relationship (ideally with standard deviations)
 phi_edges = -pi:pi/8:pi;
 [x_avg, x_std] = averageXbyYbin(gamma_pwr,delta_phase,phi_edges);

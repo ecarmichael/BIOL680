@@ -1,0 +1,62 @@
+%%%%%% Visualization of Bayesian Place Decoding (with error estimates)%%%%
+% This will add a decording error value to the bottom of the Baysian
+% decoding script.
+
+
+%% Visualize the data.
+
+goodOccInd = find(occ_binned > 0);
+h = figure; set(h,'Position',[100 100 320 240]);
+all_decode_error = NaN*zeros(size(p,1),1);
+for iT = 1:size(p,1)
+    cla;
+    temp = reshape(p(iT,:),[SET_nxBins SET_nyBins]);
+    toPlot = nan(SET_nxBins,SET_nyBins);
+    toPlot(goodOccInd) = temp(goodOccInd);
+    
+    pcolor(toPlot); axis xy; hold on; caxis([0 0.5]);
+    shading flat; axis off;
+    %This will identify the location of the MAP and then subtract the
+    %actual location value to yield the decoding error.
+    actual_loc = [yBinned(iT) xBinned(iT)]; % The location of the rat
+    [row_val row_ind] =max(toPlot, [], 1) ; % this section will identify the coordinates of the max MAP
+    [col_val col_ind] =max(row_val) ;
+    [r c] =find(toPlot==max(toPlot(:))) ;
+    [s_v s_i] =max(toPlot(:)) ;
+    [r c] =ind2sub(size(toPlot), s_i); % the location of the max MAP value
+    MAP_loc = [c r];
+    % Calculate the decoding error
+    
+    decode_error = sum(MAP_loc);
+    decode_error = round(decode_error*100)/100;
+    error_mag = abs(sum(decode_error))/107;
+    all_decode_error(iT) = decode_error;
+    % Resume the plot
+    hold on;
+%     subplot(2,3,1:4)
+    plot(yBinned(iT),xBinned(iT),'ow','MarkerSize',15);
+    
+    %Just use text.
+    
+    h = title(sprintf('t %.2f, nCells %d',tvec(iT),nActiveNeurons(iT)));
+    if error_mag <0.5
+        error_mag = 1-error_mag;
+        h = text(max(xBinned)/5,max(yBinned)/20,sprintf('Decoding Error %d',decode_error),'Color',[0 0 error_mag]);
+    elseif error_mag >=0.5
+        h = text(max(xBinned)/5,max(yBinned)/20,sprintf('Decoding Error %d',decode_error),'Color',[error_mag 0 0 ]);
+    end
+    if nActiveNeurons(iT) == 0
+        set(h,'Color',[1 0 0]);
+    else
+        set(h,'Color',[0 0 0]);
+    end
+    f(iT) = getframe(gcf); % store current frame
+    %         subplot(2,3,5:6)
+    %         plot(all_decode_error)
+    drawnow;
+end
+
+
+
+
+

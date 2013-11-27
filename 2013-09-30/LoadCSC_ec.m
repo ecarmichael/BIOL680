@@ -29,7 +29,7 @@ voltage_units = 1000; %mV
 time_units = 1000000; % conversion to seconds.
 tUnits = 'sec';
 extract_varargin; % allows the user to set these variables
-
+plot_out = 1;
 if time_units == 1000000
     tUnits = 'sec';
 elseif time_units == 10000
@@ -94,6 +94,7 @@ end
 csc = mytsd(Timestamps_s_1D, Samples_in_mV_1D, tUnits, Header);
 
 %plot for sanity
+if plot_out ==1
 inv_inds = sum(NumberOfValidSamples<512);
 total_invalid = sum(NumberOfValidSamples(inv_inds));
 total_samples = length(Timestamps_s_1D);
@@ -105,5 +106,6 @@ subplot(212)
 plot(diff(Range(csc)),'r')
 xlabel(['Invalid points:  ' num2str(percentage) '%'])
 text(length(Range(csc))-length(Range(csc))/4, 0.5*(max(Range(csc))), ['Total Invalid Points:' total_invalid])
+end
 
 end
